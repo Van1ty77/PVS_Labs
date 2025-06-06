@@ -4,7 +4,7 @@
 #include <chrono>
 #include <omp.h>
 #include <random>
-#include <cstdlib>  // Для atoi()
+#include <cstdlib>
 
 using namespace std;
 using namespace std::chrono;
@@ -36,7 +36,6 @@ void sequential_quicksort(vector<int>& arr, int low, int high) {
 // Parallel QuickSort with OpenMP
 void parallel_quicksort(vector<int>& arr, int low, int high) {
     if (low < high) {
-        // If the subarray is small enough, switch to sequential sort
         if (high - low < DEFAULT_SEQUENTIAL_THRESHOLD) {
             sequential_quicksort(arr, low, high);
             return;
@@ -54,7 +53,6 @@ void parallel_quicksort(vector<int>& arr, int low, int high) {
         swap(arr[i + 1], arr[high]);
         int pi = i + 1;
 
-        // Parallel execution of recursive calls
         #pragma omp task if(high - low > DEFAULT_SEQUENTIAL_THRESHOLD)  // Create a task only if the subarray is large enough
         parallel_quicksort(arr, low, pi - 1);
 
@@ -89,8 +87,8 @@ int main() {
         arr[i] = distrib(gen);
     }
 
-    vector<int> arr_seq = arr; // Copy for sequential sort
-    vector<int> arr_par = arr; // Copy for parallel sort
+    vector<int> arr_seq = arr;
+    vector<int> arr_par = arr;
 
     cout << "Array size: " << ARRAY_SIZE << endl;
     cout << "Sequential threshold: " << SEQUENTIAL_THRESHOLD << endl;
@@ -103,7 +101,7 @@ int main() {
     cout << "Sequential QuickSort time: " << duration_seq.count() << " microseconds" << endl;
 
     // Parallel QuickSort
-    int num_threads = omp_get_max_threads();  // Use max available threads
+    int num_threads = omp_get_max_threads();
     cout << "Using " << num_threads << " threads" << endl;
 
     auto start_par = high_resolution_clock::now();
